@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SimpleInjector;
 using SimpleInjector.Extensions.LifetimeScoping;
 
-namespace UnitTestRepositoryGenericUnitOfWork
+namespace RepositoryGenericUnitOfWork
 {
     #region  Tests
     [TestClass]
