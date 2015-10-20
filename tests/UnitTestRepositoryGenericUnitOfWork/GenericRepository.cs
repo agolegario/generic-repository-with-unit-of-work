@@ -65,7 +65,7 @@ namespace UnitTestRepositoryGenericUnitOfWork
             var pessoaModel = new PersonModel { Nome = "TESTE-CRUD" };
             service.Add(pessoaModel);
 
-            pessoaModel = service.Find(s => s.Nome.Equals("TESTE-CRUD")).FirstOrDefault();
+            pessoaModel = service.GetByName("TESTE-CRUD").FirstOrDefault();
 
             if (pessoaModel == null) return;
 
@@ -105,6 +105,7 @@ namespace UnitTestRepositoryGenericUnitOfWork
         PersonModel GetById(int id);
         IEnumerable<PersonModel> GetAll();
         IEnumerable<PersonModel> Find(Expression<Func<Person, bool>> predicate);
+        IEnumerable<PersonModel> GetByName(string nome);
         void Dispose();
     }
     public class PersonService : IPersonService
@@ -146,6 +147,10 @@ namespace UnitTestRepositoryGenericUnitOfWork
         public IEnumerable<PersonModel> Find(Expression<Func<Person, bool>> predicate)
         {
             return Mapper.Map<IEnumerable<Person>, IEnumerable<PersonModel>>(_personRepository.Find(predicate));
+        }
+        public IEnumerable<PersonModel> GetByName(string nome)
+        {
+            return Mapper.Map<IEnumerable<Person>, IEnumerable<PersonModel>>(_personRepository.GetByName(nome));
         }
         public void Dispose()
         {
@@ -205,6 +210,7 @@ namespace UnitTestRepositoryGenericUnitOfWork
     }
     public interface IPersonRepository : IRepositoryBase<Person>
     {
+        IEnumerable<Person> GetByName(string nome);
     }
     #endregion
 
@@ -250,9 +256,15 @@ namespace UnitTestRepositoryGenericUnitOfWork
     }
     public class PersonRepository : RepositoryBase<Person>, IPersonRepository
     {
+        private readonly IMyContext _context;
         public PersonRepository(IMyContext context) : base(context)
         {
+            _context = context;
         }
+        public IEnumerable<Person> GetByName(string nome)
+        {
+            return _context.Set<Person>().Where(s => s.Nome.Contains(nome));
+        } 
     }
     public interface IMyContext : IUnitOfWork
     {
