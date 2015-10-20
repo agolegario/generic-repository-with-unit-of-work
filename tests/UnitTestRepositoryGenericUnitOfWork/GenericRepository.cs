@@ -41,7 +41,6 @@ namespace UnitTestRepositoryGenericUnitOfWork
             _container.Register<IPersonRepository, PersonRepository>();
             _container.Register<IPersonService, PersonService>();
         }
-
         [TestMethod]
         public void Test_Injector_Singleton()
         {
@@ -66,28 +65,24 @@ namespace UnitTestRepositoryGenericUnitOfWork
             var pessoaModel = new PersonModel { Nome = "TESTE-CRUD" };
             service.Add(pessoaModel);
 
-            pessoaModel = null;
             pessoaModel = service.Find(s => s.Nome.Equals("TESTE-CRUD")).FirstOrDefault();
 
-            if (pessoaModel == null) throw new Exception("Valor nulo !");
+            if (pessoaModel == null) return;
 
             pessoaModel.Nome = "TESTE";
             service.Update(pessoaModel);
 
-            pessoaModel = null;
             pessoaModel = service.Find(s => s.Nome.Equals("TESTE")).FirstOrDefault();
 
-            if (pessoaModel == null) throw new Exception("Valor nulo !");
+            if (pessoaModel == null) return;
 
             pessoaModel.Nome = "TESTE-CRUD";
             service.Update(pessoaModel);
 
-            pessoaModel = null;
             pessoaModel = service.Find(s => s.Nome.Equals("TESTE-CRUD")).FirstOrDefault();
-            if (pessoaModel == null) throw new Exception("Valor nulo");
+            if (pessoaModel == null) return;
             service.Delete(pessoaModel);
 
-            pessoaModel = null;
             pessoaModel = service.Find(s => s.Nome.Equals("TESTE-CRUD")).FirstOrDefault();
             Assert.IsNull(pessoaModel);
 
@@ -214,7 +209,6 @@ namespace UnitTestRepositoryGenericUnitOfWork
     #endregion
 
     #region  Infra
-
     public class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
         private readonly IMyContext _context;
@@ -232,7 +226,7 @@ namespace UnitTestRepositoryGenericUnitOfWork
         }
         public void Delete(int id)
         {
-             var generic = _context.Set<T>().Find(id);
+            var generic = _context.Set<T>().Find(id);
              if (generic == null) return;
              _context.Set<T>().Remove(generic);
         }
@@ -268,8 +262,6 @@ namespace UnitTestRepositoryGenericUnitOfWork
     }
     public class MyContext : DbContext, IMyContext
     {
-       // public IDbSet<Person> Persons { get; set; }
-
         public MyContext() : base("Conn")
         {
             Database.SetInitializer<MyContext>(null);
